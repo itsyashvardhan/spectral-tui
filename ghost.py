@@ -13,6 +13,8 @@ import time
 import getpass
 import socket
 import subprocess
+import shutil
+import platform
 import pty
 import select
 import threading
@@ -27,10 +29,12 @@ from datetime import datetime
 USER = getpass.getuser()
 HOST = socket.gethostname()
 PLATFORM = sys.platform.upper()
-HOME = os.path.expanduser("~")
+IS_WINDOWS = sys.platform.startswith('win')
+IS_MAC = sys.platform.startswith('darwin')
+IS_LINUX = sys.platform.startswith('linux')
 HOME = os.path.expanduser("~")
 START_TIME = time.time()
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".spectre.json")
+CONFIG_FILE = os.path.join(HOME, ".spectre.json")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PERSISTENCE
@@ -112,7 +116,8 @@ def get_network_info():
 
 def ping_host(host="8.8.8.8"):
     try:
-        result = subprocess.run(["ping", "-c", "1", "-W", "1", host], capture_output=True, text=True, timeout=2)
+        flag = "-n" if IS_WINDOWS else "-c"
+        result = subprocess.run(["ping", flag, "1", host], capture_output=True, text=True, timeout=2)
         if result.returncode == 0:
             for line in result.stdout.split('\n'):
                 if 'time=' in line:
@@ -122,29 +127,61 @@ def ping_host(host="8.8.8.8"):
 
 def get_cpu_usage():
     try:
-        with open('/proc/stat', 'r') as f:
-            fields = f.readline().split()[1:]
-            return 100 - (int(fields[3]) * 100 // sum(int(x) for x in fields))
-    except: return 0
+        if IS_LINUX:
+            with open('/proc/stat', 'r') as f:
+                fields = f.readline().split()[1:]
+                return 100 - (int(fields[3]) * 100 // sum(int(x) for x in fields))
+        elif IS_MAC:
+            # Simple approximation for Mac without psutil
+            cmd = "ps -A -o %cpu | awk '{s+=$1} END {print s}'"
+            res = subprocess.check_output(cmd, shell=True).decode().strip()
+            return int(float(res)) if res else 0
+        elif IS_WINDOWS:
+            cmd = "wmic cpu get loadpercentage"
+            res = subprocess.check_output(cmd, shell=True).decode()
+            for line in res.splitlines():
+                if line.strip().isdigit():
+                    return int(line.strip())
+    except: pass
+    return 0
 
 def get_memory_usage():
     try:
-        with open('/proc/meminfo', 'r') as f:
-            lines = f.readlines()
-            total, avail = int(lines[0].split()[1]), int(lines[2].split()[1])
-            used = total - avail
-            return f"{used//1048576}G/{total//1048576}G", (used*100)//total
-    except: return "N/A", 0
+        if IS_LINUX:
+            with open('/proc/meminfo', 'r') as f:
+                lines = f.readlines()
+                total = int(lines[0].split()[1]) * 1024
+                avail = int(lines[2].split()[1]) * 1024
+                used = total - avail
+                return f"{used//1073741824}G/{total//1073741824}G", (used*100)//total
+        elif IS_MAC:
+             # parsing vm_stat is complex, using ps approximation or skipping for no-dep
+             return "N/A", 0 
+        elif IS_WINDOWS:
+            # wmic OS get FreePhysicalMemory,TotalVisibleMemorySize  (KB)
+            cmd = "wmic OS get FreePhysicalMemory,TotalVisibleMemorySize /Value"
+            res = subprocess.check_output(cmd, shell=True).decode()
+            data = {}
+            for line in res.splitlines():
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    data[k.strip()] = int(v.strip())
+            total = data.get("TotalVisibleMemorySize", 0) * 1024
+            free = data.get("FreePhysicalMemory", 0) * 1024
+            used = total - free
+            if total > 0:
+                return f"{used//1073741824}G/{total//1073741824}G", (used*100)//total
+    except: pass
+    return "N/A", 0
 
 def get_disk_usage():
     try:
-        st = os.statvfs('/')
-        total = st.f_blocks * st.f_frsize
-        free = st.f_bavail * st.f_frsize
-        used = total - free
-        pct = (used * 100) // total
-        return f"{used//1073741824}G/{total//1073741824}G", pct
-    except: return "N/A", 0
+        if hasattr(shutil, 'disk_usage'):
+            total, used, free = shutil.disk_usage('/')
+            pct = (used * 100) // total
+            return f"{used//1073741824}G/{total//1073741824}G", pct
+    except: pass
+    return "N/A", 0
 
 def get_load_avg():
     try:
@@ -192,11 +229,19 @@ NET_SPEED = NetSpeed()
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_cpu_temp():
     try:
-        for i in range(10):
-            path = f'/sys/class/thermal/thermal_zone{i}/temp'
-            if os.path.exists(path):
-                with open(path, 'r') as f:
-                    return f"{int(f.read().strip()) / 1000:.1f}°C"
+        if IS_LINUX:
+            for i in range(10):
+                path = f'/sys/class/thermal/thermal_zone{i}/temp'
+                if os.path.exists(path):
+                    with open(path, 'r') as f:
+                        return f"{int(f.read().strip()) / 1000:.1f}°C"
+        elif IS_MAC:
+            # osx-cpu-temp or similar if available, otherwise N/A
+            pass
+        elif IS_WINDOWS:
+            # wmic /namespace:\\root\wmi PATH MSAcpi_ThermalZoneTemperature get CurrentTemperature
+            # Often requires admin, returns Kelvin * 10
+            pass
     except: pass
     return "N/A"
 
@@ -229,20 +274,53 @@ def get_battery():
 def get_open_ports():
     ports = []
     try:
-        result = subprocess.run(['ss', '-tuln'], capture_output=True, text=True, timeout=2)
-        for line in result.stdout.split('\n')[1:]:
-            if 'LISTEN' in line:
-                parts = line.split()
-                if len(parts) >= 5:
-                    addr = parts[4].split(':')[-1]
-                    if addr.isdigit(): ports.append(addr)
+        if IS_WINDOWS:
+            result = subprocess.run(['netstat', '-an'], capture_output=True, text=True, timeout=2)
+            for line in result.stdout.split('\n'):
+                if 'LISTENING' in line:
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        addr = parts[1]
+                        if ':' in addr:
+                            port = addr.split(':')[-1]
+                            if port.isdigit(): ports.append(port)
+        else:
+            # Linux (ss) / Mac (netstat usually, ss if installed via brewed)
+            # Default to ss for Linux, netstat for Mac
+            if IS_LINUX:
+                result = subprocess.run(['ss', '-tuln'], capture_output=True, text=True, timeout=2)
+                for line in result.stdout.split('\n')[1:]:
+                    if 'LISTEN' in line:
+                        parts = line.split()
+                        if len(parts) >= 5:
+                            addr = parts[4].split(':')[-1]
+                            if addr.isdigit(): ports.append(addr)
+            elif IS_MAC:
+                result = subprocess.run(['netstat', '-anp', 'tcp'], capture_output=True, text=True, timeout=2)
+                for line in result.stdout.split('\n'):
+                    if 'LISTEN' in line:
+                        parts = line.split()
+                        if len(parts) >= 4:
+                            addr = parts[3]
+                            if '.' in addr:
+                                port = addr.split('.')[-1]
+                                if port.isdigit(): ports.append(port)
     except: pass
-    return ports[:6] if ports else ["None"]
+    return list(set(ports))[:6] if ports else ["None"]
 
 def get_connections():
     try:
-        result = subprocess.run(['ss', '-t', 'state', 'established'], capture_output=True, text=True, timeout=2)
-        return str(max(0, len(result.stdout.strip().split('\n')) - 1))
+        if IS_LINUX:
+            result = subprocess.run(['ss', '-t', 'state', 'established'], capture_output=True, text=True, timeout=2)
+            return str(max(0, len(result.stdout.strip().split('\n')) - 1))
+        elif IS_WINDOWS or IS_MAC:
+            cmd = ['netstat', '-an']
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
+            count = 0
+            for line in result.stdout.split('\n'):
+                if 'ESTABLISHED' in line:
+                    count += 1
+            return str(count)
     except: return "0"
 
 def get_disk_io():
@@ -258,13 +336,18 @@ def get_disk_io():
 def get_per_core_cpu():
     cores = []
     try:
-        with open('/proc/stat', 'r') as f:
-            for line in f:
-                if line.startswith('cpu') and line[3].isdigit():
-                    parts = line.split()[1:]
-                    total = sum(int(x) for x in parts)
-                    idle = int(parts[3])
-                    cores.append(100 - (idle * 100 // total) if total > 0 else 0)
+        if IS_LINUX:
+            with open('/proc/stat', 'r') as f:
+                for line in f:
+                    if line.startswith('cpu') and line[3].isdigit():
+                        parts = line.split()[1:]
+                        total = sum(int(x) for x in parts)
+                        idle = int(parts[3])
+                        cores.append(100 - (idle * 100 // total) if total > 0 else 0)
+        # Windows/Mac complex without psutil, returning single avg as list or mock
+        elif IS_WINDOWS or IS_MAC:
+            usage = get_cpu_usage()
+            cores = [usage] * 4 # Mock visual for no-dep env
     except: pass
     return cores[:4] if cores else [0]
 
@@ -272,17 +355,37 @@ def get_processes():
     """Get list of processes with PID, name, CPU%, time."""
     procs = []
     try:
-        result = subprocess.run(['ps', '-eo', 'pid,comm,%cpu,etime', '--sort=-%cpu'],
-                               capture_output=True, text=True, timeout=3)
-        for line in result.stdout.strip().split('\n')[1:51]:
-            parts = line.split()
-            if len(parts) >= 4:
-                procs.append({
-                    'pid': parts[0],
-                    'name': parts[1][:15],
-                    'cpu': parts[2],
-                    'time': parts[3]
-                })
+        if IS_WINDOWS:
+            # tasklist /FO CSV /NH
+            result = subprocess.run(['tasklist', '/FO', 'CSV', '/NH'], capture_output=True, text=True, timeout=3)
+            import csv
+            reader = csv.reader(result.stdout.splitlines())
+            for row in reader:
+                if len(row) >= 2:
+                    procs.append({
+                        'pid': row[1],
+                        'name': row[0][:15],
+                        'cpu': '0.0', # CPU not readily available in tasklist
+                        'time': 'N/A'
+                    })
+        else:
+            # Linux and Mac
+            # Linux: ps -eo pid,comm,%cpu,etime --sort=-%cpu
+            # Mac: ps -A -o pid,comm,%cpu,time (no --sort by default like linux)
+            args = ['ps', '-eo', 'pid,comm,%cpu,etime', '--sort=-%cpu'] if IS_LINUX else ['ps', '-A', '-o', 'pid,comm,%cpu,time']
+            result = subprocess.run(args, capture_output=True, text=True, timeout=3)
+            lines = result.stdout.strip().split('\n')[1:51]
+            if IS_MAC: lines.sort(key=lambda x: float(x.split()[2]) if len(x.split()) > 2 and x.split()[2].replace('.','',1).isdigit() else 0, reverse=True)
+            
+            for line in lines:
+                parts = line.split()
+                if len(parts) >= 4:
+                    procs.append({
+                        'pid': parts[0],
+                        'name': parts[1][:15],
+                        'cpu': parts[2],
+                        'time': parts[3]
+                    })
     except: pass
     return procs
 
@@ -290,40 +393,68 @@ def scan_network():
     """Scan local network for devices."""
     devices = []
     try:
-        # Get local IP range
-        result = subprocess.run(['ip', 'route'], capture_output=True, text=True, timeout=2)
-        subnet = None
-        for line in result.stdout.split('\n'):
-            if 'src' in line and 'default' not in line:
-                parts = line.split()
-                for i, p in enumerate(parts):
-                    if '/' in p and '.' in p:
-                        subnet = p
-                        break
-        
-        if subnet:
-            # Use arp-scan or fall back to arp
-            try:
-                result = subprocess.run(['arp-scan', '-l'], capture_output=True, text=True, timeout=10)
-                for line in result.stdout.split('\n'):
-                    parts = line.split('\t')
-                    if len(parts) >= 3 and '.' in parts[0]:
-                        devices.append({
-                            'ip': parts[0],
-                            'mac': parts[1][:17],
-                            'vendor': parts[2][:20] if len(parts) > 2 else 'Unknown'
-                        })
-            except:
-                # Fallback to arp cache
-                result = subprocess.run(['arp', '-n'], capture_output=True, text=True, timeout=3)
-                for line in result.stdout.split('\n')[1:]:
+        if IS_LINUX:
+            # Get local IP range
+            result = subprocess.run(['ip', 'route'], capture_output=True, text=True, timeout=2)
+            subnet = None
+            for line in result.stdout.split('\n'):
+                if 'src' in line and 'default' not in line:
                     parts = line.split()
-                    if len(parts) >= 3 and '.' in parts[0]:
-                        devices.append({
-                            'ip': parts[0],
-                            'mac': parts[2][:17] if len(parts) > 2 else 'N/A',
-                            'vendor': 'Unknown'
-                        })
+                    for i, p in enumerate(parts):
+                        if '/' in p and '.' in p:
+                            subnet = p
+                            break
+            
+            if subnet:
+                # Use arp-scan or fall back to arp
+                try:
+                    result = subprocess.run(['arp-scan', '-l'], capture_output=True, text=True, timeout=10)
+                    for line in result.stdout.split('\n'):
+                        parts = line.split('\t')
+                        if len(parts) >= 3 and '.' in parts[0]:
+                            devices.append({
+                                'ip': parts[0],
+                                'mac': parts[1][:17],
+                                'vendor': parts[2][:20] if len(parts) > 2 else 'Unknown'
+                            })
+                except:
+                    pass
+        
+        # Fallback / Windows / Mac -> Use ARP table
+        if not devices:
+            args = ['arp', '-a'] if IS_WINDOWS or IS_MAC else ['arp', '-n']
+            result = subprocess.run(args, capture_output=True, text=True, timeout=3)
+            # Parsing differs by OS
+            for line in result.stdout.split('\n'):
+                parts = line.split()
+                if not parts: continue
+                # Windows: Interface: x.x.x.x ... Internet Address Physical Address Type
+                # Mac: ? (x.x.x.x) at x:x:x:x on en0
+                # Linux: x.x.x.x dev x lladdr x:x:x:x
+                
+                ip, mac = None, None
+                
+                if IS_WINDOWS:
+                    if len(parts) >= 3 and parts[0].replace('.','').isdigit():
+                         ip = parts[0]
+                         mac = parts[1]
+                elif IS_MAC:
+                    if len(parts) >= 4 and parts[1].startswith('(') and parts[1].endswith(')'):
+                        ip = parts[1][1:-1]
+                        mac = parts[3]
+                elif IS_LINUX and len(parts) >= 3:
+                     # Fallback linux parser from previous code
+                     if '.' in parts[0] and ':' in parts[2]:
+                         ip = parts[0]
+                         mac = parts[2]
+
+                if ip and mac and ':' in mac:
+                     devices.append({
+                        'ip': ip,
+                        'mac': mac[:17],
+                        'vendor': 'Unknown'
+                    })
+
     except: pass
     return devices[:20]
 
@@ -471,7 +602,7 @@ class Terminal:
             self.output.append("╚═════════════════════════════════════╝")
         
         elif cmd_lower == "about":
-            self.output.append(f"SPECTRE System Interface v5.1.0")
+            self.output.append(f"SPECTRE System Interface v1.0.0")
             self.output.append(f"Operator: {USER} // Protocol: GHOST")
             self.output.append(f"Last system breach: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
             
