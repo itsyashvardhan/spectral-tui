@@ -1,5 +1,5 @@
 #!/bin/bash
-# GHOST PROTOCOL - USB Auto-Run Script
+# SPECTRE PROTOCOL - USB Auto-Run Script
 # This is triggered by udev when the USB is plugged in
 
 # Get the USB mount point
@@ -8,18 +8,18 @@ USB_MOUNT=$(findmnt -rn -S LABEL=vault -o TARGET 2>/dev/null || echo "/media/$US
 # Wait for mount
 sleep 2
 
-# Check if ghost.py exists
-if [ -f "$USB_MOUNT/ghost.py" ]; then
+# Check if spectre.py exists
+if [ -f "$USB_MOUNT/spectre.py" ]; then
     # Launch in a new fullscreen terminal
     export DISPLAY=:0
     
     if command -v gnome-terminal &> /dev/null; then
-        gnome-terminal --full-screen -- bash -c "python3 '$USB_MOUNT/ghost.py'"
+        gnome-terminal --full-screen -- bash -c "python3 '$USB_MOUNT/spectre.py'"
     elif command -v konsole &> /dev/null; then
-        konsole --fullscreen -e bash -c "python3 '$USB_MOUNT/ghost.py'"
+        konsole --fullscreen -e bash -c "python3 '$USB_MOUNT/spectre.py'"
     elif command -v xfce4-terminal &> /dev/null; then
-        xfce4-terminal --fullscreen -e "python3 '$USB_MOUNT/ghost.py'"
+        xfce4-terminal --fullscreen -e "python3 '$USB_MOUNT/spectre.py'"
     elif command -v xterm &> /dev/null; then
-        xterm -fullscreen -e "python3 '$USB_MOUNT/ghost.py'"
+        xterm -fullscreen -e "python3 '$USB_MOUNT/spectre.py'"
     fi
 fi

@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# GHOST PROTOCOL - LINUX AUTO-RUN SETUP
+# SPECTRE PROTOCOL - LINUX AUTO-RUN SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 # 
 # To enable auto-run when USB is plugged in, you need to set up a udev rule.
@@ -19,15 +19,15 @@
 # ----------------------------
 # Run these commands (replace XXXX:YYYY with your USB's IDs):
 #
-#   sudo nano /etc/udev/rules.d/99-ghost-usb.rules
+#   sudo nano /etc/udev/rules.d/99-spectre-usb.rules
 #
 # Add this line (modify vendor/product IDs):
 #
-#   ACTION=="add", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="YYYY", RUN+="/path/to/usb/ghost-autorun.sh"
+#   ACTION=="add", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="YYYY", RUN+="/path/to/usb/spectre-autorun.sh"
 #
 # STEP 3: Create the autorun script
 # ---------------------------------
-# The ghost-autorun.sh script is already on your USB.
+# The spectre-autorun.sh script is already on your USB.
 # Just update the path in the udev rule above.
 #
 # STEP 4: Reload udev rules
@@ -37,7 +37,7 @@
 #
 # STEP 5: Test
 # ------------
-# Unplug and replug your USB. Ghost Protocol should launch automatically!
+# Unplug and replug your USB. Spectre Protocol should launch automatically!
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 # ALTERNATIVE: Desktop Autorun (Easier but manual)
@@ -46,9 +46,9 @@
 # For Nautilus/GNOME Files:
 #   1. Open Files preferences (Ctrl+,)
 #   2. Enable "Run executable text files when they are opened"
-#   3. Double-click GhostProtocol.desktop when USB opens
+#   3. Double-click SpectreProtocol.desktop when USB opens
 #
 # For other file managers:
 #   - Right-click run.sh → "Run as program"
-#   - Or open terminal in USB folder and run: ./ghost.py
+#   - Or open terminal in USB folder and run: ./spectre.py
 #

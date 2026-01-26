@@ -15,7 +15,7 @@ NC='\033[0m'
 echo -e "${CYAN}⚡ Installing SPECTRE as a System App...${NC}"
 
 # 2. Make executable
-chmod +x "$APP_DIR/ghost.py"
+chmod +x "$APP_DIR/spectre.py"
 
 # 3. Create System Symlink (Requires Sudo)
 echo -e "Creating symlink in $PREFIX/spectre..."
@@ -23,7 +23,7 @@ echo -e "Creating symlink in $PREFIX/spectre..."
 if [ -L "$PREFIX/spectre" ]; then
     sudo rm "$PREFIX/spectre"
 fi
-sudo ln -s "$APP_DIR/ghost.py" "$PREFIX/spectre"
+sudo ln -s "$APP_DIR/spectre.py" "$PREFIX/spectre"
 
 # 4. Install Desktop Entry
 echo -e "Installing Desktop shortcut..."

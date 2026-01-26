@@ -87,7 +87,7 @@ EVENTS = EventManager()
 # COLOR THEMES - Aesthetic & Pastel
 # ═══════════════════════════════════════════════════════════════════════════════
 THEMES = {
-    "ghost": {"primary": curses.COLOR_WHITE, "secondary": curses.COLOR_CYAN, "accent": curses.COLOR_WHITE},
+    "spectre": {"primary": curses.COLOR_WHITE, "secondary": curses.COLOR_CYAN, "accent": curses.COLOR_WHITE},
     "mint": {"primary": curses.COLOR_GREEN, "secondary": curses.COLOR_WHITE, "accent": curses.COLOR_CYAN},
     "lavender": {"primary": curses.COLOR_MAGENTA, "secondary": curses.COLOR_WHITE, "accent": curses.COLOR_WHITE},
     "ocean": {"primary": curses.COLOR_BLUE, "secondary": curses.COLOR_WHITE, "accent": curses.COLOR_CYAN},
@@ -603,7 +603,7 @@ class Terminal:
         
         elif cmd_lower == "about":
             self.output.append(f"SPECTRE System Interface v1.0.0")
-            self.output.append(f"Operator: {USER} // Protocol: GHOST")
+            self.output.append(f"Operator: {USER} // Protocol: SPECTRE")
             self.output.append(f"Last system breach: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
             
         elif cmd_lower in ["exit", "quit"]:
