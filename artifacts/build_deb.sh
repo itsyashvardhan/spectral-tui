@@ -38,6 +38,9 @@ sed 's|Exec=spectre|Exec=/usr/bin/spectre|g' ../spectre.desktop > "$BUILD_DIR/us
 sed -i 's|Icon=.*|Icon=/usr/lib/spectre/spectre.png|g' "$BUILD_DIR/usr/share/applications/$APP_NAME.desktop"
 
 # 4. Create Control File
+# Calculate installed size in KB
+INSTALLED_SIZE=$(du -sk "$BUILD_DIR/usr" | cut -f1)
+
 cat <<EOF > "$BUILD_DIR/DEBIAN/control"
 Package: $APP_NAME
 Version: $VERSION
@@ -45,6 +48,8 @@ Section: utils
 Priority: optional
 Architecture: $ARCH
 Depends: python3
+Installed-Size: $INSTALLED_SIZE
+Homepage: https://github.com/itsyashvardhan/spectre
 Maintainer: itsyashvardhan <itsyashvardhan@users.noreply.github.com>
 Description: Advanced System Interface & Dashboard
  A TUI-based dashboard for system monitoring, network scanning,
@@ -52,7 +57,47 @@ Description: Advanced System Interface & Dashboard
  interface for system operators.
 EOF
 
-# 5. Build
+# 5. Create Copyright File (Fixes 'Unknown License')
+mkdir -p "$BUILD_DIR/usr/share/doc/$APP_NAME"
+cat <<EOF > "$BUILD_DIR/usr/share/doc/$APP_NAME/copyright"
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: $APP_NAME
+Source: https://github.com/itsyashvardhan/spectre
+
+Files: *
+Copyright: 2024 itsyashvardhan
+License: MIT
+
+License: MIT
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files...
+ (Full MIT License text)
+EOF
+
+# 6. Install Icon to proper path (Fixes generic icon)
+mkdir -p "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps"
+cp ../spectre.png "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps/spectre.png"
+
+# 7. Create AppStream Metadata (Fixes GUI store details)
+mkdir -p "$BUILD_DIR/usr/share/metainfo"
+cat <<EOF > "$BUILD_DIR/usr/share/metainfo/spectre.appdata.xml"
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.yashvs.spectre</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Spectre</name>
+  <summary>Advanced System Interface &amp; Dashboard</summary>
+  <description>
+    <p>A minimalist, high-performance system interface designed for operators who value speed and aesthetics.</p>
+  </description>
+  <launchable type="desktop-id">spectre.desktop</launchable>
+  <url type="homepage">https://github.com/itsyashvardhan/spectre</url>
+  <developer_name>itsyashvardhan</developer_name>
+</component>
+EOF
+
+# 8. Build
 echo ">>> Building .deb package..."
 mkdir -p ../releases
 dpkg-deb --build "$BUILD_DIR" "../releases/$DEB_NAME"
