@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 APP_NAME="spectre"
-VERSION="1.0.0"
+VERSION="1.0.1"
 ARCH="all"
 BUILD_DIR="build_workspace"
 DEB_NAME="${APP_NAME}_${VERSION}_${ARCH}.deb"
@@ -70,8 +70,22 @@ License: MIT
 
 License: MIT
  Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files...
- (Full MIT License text)
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
 EOF
 
 # 6. Install Icon to proper path (Fixes generic icon)
@@ -90,10 +104,28 @@ cat <<EOF > "$BUILD_DIR/usr/share/metainfo/spectre.appdata.xml"
   <summary>Advanced System Interface &amp; Dashboard</summary>
   <description>
     <p>A minimalist, high-performance system interface designed for operators who value speed and aesthetics.</p>
+    <ul>
+      <li>Real-time system telemetry</li>
+      <li>Integrated file browser with previews</li>
+      <li>Embedded terminal for direct OS commands</li>
+    </ul>
   </description>
   <launchable type="desktop-id">spectre.desktop</launchable>
   <url type="homepage">https://github.com/itsyashvardhan/spectre</url>
   <developer_name>itsyashvardhan</developer_name>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The main Spectre dashboard showing system stats.</caption>
+      <image>https://raw.githubusercontent.com/itsyashvardhan/spectre/main/spectre.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.1" date="2026-01-27">
+      <description>
+        <p>Improved package metadata for better integration with Linux App Stores.</p>
+      </description>
+    </release>
+  </releases>
 </component>
 EOF
 
