@@ -4,7 +4,7 @@ Binaries must be built on their respective native operating systems.
 
 ## 🐧 Linux (.deb)
 **Status**: ✅ Built
-**Artifact**: `spectre_1.0.0_all.deb`
+**Release**: `spectre_1.0.1_all.deb`
 
 To rebuild:
 ```bash
@@ -13,7 +13,6 @@ To rebuild:
 
 ## 🪟 Windows (.zip / .exe)
 **Status**: ⏳ Pending Build
-**Artifact**: `spectre_v1.0.0_win64.zip`
 
 **Instructions**:
 1.  Clone/Copy this repository to a Windows machine.
@@ -24,7 +23,6 @@ To rebuild:
 
 ## 🍎 macOS (.dmg)
 **Status**: ⏳ Pending Build
-**Artifact**: `spectre_v1.0.0_macos.dmg`
 
 **Instructions**:
 1.  Clone/Copy this repository to a Mac.
