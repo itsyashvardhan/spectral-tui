@@ -1,11 +1,12 @@
-# <img src="spectre.png" height="32" align="center"> SPECTRE
+# <img width="1280" height="640" alt="spectre" src="https://github.com/user-attachments/assets/686d413c-b379-4807-9a0c-ff3c3af9fd59" />
 
 [![GitHub version](https://img.shields.io/github/v/release/itsyashvardhan/spectre?include_prereleases&style=for-the-badge&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectre/releases/tag/1.0.1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-white.svg?style=for-the-badge&labelColor=black)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-white?style=for-the-badge&labelColor=black)](https://github.com/itsyashvardhan/spectre)
 [![Python](https://img.shields.io/badge/Python-3.8+-white?style=for-the-badge&logo=python&labelColor=black)](https://www.python.org/)
 
-A minimalist, high-performance system interface designed for operators who value speed and aesthetics. SPECTRE provides a unified TUI for system monitoring, file management, and terminal operations across Linux, macOS, and Windows.
+A minimalist, high-performance system interface designed for operators who value speed and aesthetics. <br>
+SPECTRE provides a unified TUI for system monitoring, file management, and terminal operations across Linux, macOS, and Windows.
 
 ## ⚡ Quick Start
 
