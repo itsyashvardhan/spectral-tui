@@ -6,7 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-white.svg?style=for-the-badge&labelColor=black)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-white?style=for-the-badge&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui)
 [![Python](https://img.shields.io/badge/Python-3.8+-white?style=for-the-badge&logo=python&labelColor=black)](https://www.python.org/)
-[![Views](https://img.shields.io/badge/Views-👁️%20Dynamic-white?style=for-the-badge&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui/graphs/traffic)
+[![Views](https://hits.sh/github.com/itsyashvardhan/spectral-tui.svg?style=for-the-badge&label=👁️&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui/graphs/traffic)
+
+
 
 A minimalist, high-performance system interface designed for operators who value speed and aesthetics. <br>
 SPECTRAL provides a unified TUI for system monitoring, file management, and terminal operations across Linux, macOS, and Windows.
@@ -17,12 +19,6 @@ To install and run SPECTRAL with one command:
 
 ```bash
 curl -fsSL https://yashvs.dev/spectral/install.sh | bash
-```
-
-Or to launch the interface immediately without installation:
-
-```bash
-./run.sh
 ```
 
 ## 🛠️ Build  & Installation
