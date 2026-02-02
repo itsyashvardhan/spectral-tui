@@ -1,10 +1,10 @@
-# How to Build Spectre Releases
+# How to Build Spectral Releases
 
 Binaries must be built on their respective native operating systems.
 
 ## 🐧 Linux (.deb)
 **Status**: ✅ Built
-**Release**: `spectre_1.0.1_all.deb`
+**Release**: `spectral_1.0.2_all.deb`
 
 To rebuild:
 ```bash

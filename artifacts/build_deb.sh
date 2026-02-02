@@ -2,8 +2,8 @@
 set -e
 
 # Configuration
-APP_NAME="spectre"
-VERSION="1.0.1"
+APP_NAME="spectral"
+VERSION="1.0.2"
 ARCH="all"
 BUILD_DIR="build_workspace"
 DEB_NAME="${APP_NAME}_${VERSION}_${ARCH}.deb"
@@ -20,22 +20,22 @@ mkdir -p "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps"
 echo ">>> Setting up build structure..."
 
 # 1. Copy Core Files
-cp ../spectre.py "$BUILD_DIR/usr/lib/$APP_NAME/"
-cp ../spectre.png "$BUILD_DIR/usr/lib/$APP_NAME/"
-chmod +x "$BUILD_DIR/usr/lib/$APP_NAME/spectre.py"
+cp ../spectral.py "$BUILD_DIR/usr/lib/$APP_NAME/"
+cp ../spectral.png "$BUILD_DIR/usr/lib/$APP_NAME/"
+chmod +x "$BUILD_DIR/usr/lib/$APP_NAME/spectral.py"
 
 # 2. Create Launcher Script
 cat <<EOF > "$BUILD_DIR/usr/bin/$APP_NAME"
 #!/bin/bash
-exec python3 /usr/lib/$APP_NAME/spectre.py "\$@"
+exec python3 /usr/lib/$APP_NAME/spectral.py "\$@"
 EOF
 chmod +x "$BUILD_DIR/usr/bin/$APP_NAME"
 
 # 3. Create Desktop Entry
 # We use the existing one but SED the paths
-sed 's|Exec=spectre|Exec=/usr/bin/spectre|g' ../spectre.desktop > "$BUILD_DIR/usr/share/applications/$APP_NAME.desktop"
+sed 's|Exec=spectral|Exec=/usr/bin/spectral|g' ../spectral.desktop > "$BUILD_DIR/usr/share/applications/$APP_NAME.desktop"
 # Update Icon path
-sed -i 's|Icon=.*|Icon=/usr/lib/spectre/spectre.png|g' "$BUILD_DIR/usr/share/applications/$APP_NAME.desktop"
+sed -i 's|Icon=.*|Icon=/usr/lib/spectral/spectral.png|g' "$BUILD_DIR/usr/share/applications/$APP_NAME.desktop"
 
 # 4. Create Control File
 # Calculate installed size in KB
@@ -49,7 +49,7 @@ Priority: optional
 Architecture: $ARCH
 Depends: python3
 Installed-Size: $INSTALLED_SIZE
-Homepage: https://github.com/itsyashvardhan/spectre
+Homepage: https://github.com/itsyashvardhan/spectral-tui
 Maintainer: itsyashvardhan <itsyashvardhan@users.noreply.github.com>
 Description: Advanced System Interface & Dashboard
  A TUI-based dashboard for system monitoring, network scanning,
@@ -62,7 +62,7 @@ mkdir -p "$BUILD_DIR/usr/share/doc/$APP_NAME"
 cat <<EOF > "$BUILD_DIR/usr/share/doc/$APP_NAME/copyright"
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: $APP_NAME
-Source: https://github.com/itsyashvardhan/spectre
+Source: https://github.com/itsyashvardhan/spectral-tui
 
 Files: *
 Copyright: 2024 itsyashvardhan
@@ -90,17 +90,17 @@ EOF
 
 # 6. Install Icon to proper path (Fixes generic icon)
 mkdir -p "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps"
-cp ../spectre.png "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps/spectre.png"
+cp ../spectral.png "$BUILD_DIR/usr/share/icons/hicolor/512x512/apps/spectral.png"
 
 # 7. Create AppStream Metadata (Fixes GUI store details)
 mkdir -p "$BUILD_DIR/usr/share/metainfo"
 cat <<EOF > "$BUILD_DIR/usr/share/metainfo/spectre.appdata.xml"
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>dev.yashvs.spectre</id>
+  <id>dev.yashvs.spectral</id>
   <metadata_license>MIT</metadata_license>
   <project_license>MIT</project_license>
-  <name>Spectre</name>
+  <name>Spectral</name>
   <summary>Advanced System Interface &amp; Dashboard</summary>
   <description>
     <p>A minimalist, high-performance system interface designed for operators who value speed and aesthetics.</p>
@@ -110,16 +110,21 @@ cat <<EOF > "$BUILD_DIR/usr/share/metainfo/spectre.appdata.xml"
       <li>Embedded terminal for direct OS commands</li>
     </ul>
   </description>
-  <launchable type="desktop-id">spectre.desktop</launchable>
-  <url type="homepage">https://github.com/itsyashvardhan/spectre</url>
+  <launchable type="desktop-id">spectral.desktop</launchable>
+  <url type="homepage">https://github.com/itsyashvardhan/spectral-tui</url>
   <developer_name>itsyashvardhan</developer_name>
   <screenshots>
     <screenshot type="default">
-      <caption>The main Spectre dashboard showing system stats.</caption>
-      <image>https://raw.githubusercontent.com/itsyashvardhan/spectre/main/spectre.png</image>
+      <caption>The main Spectral dashboard showing system stats.</caption>
+      <image>https://raw.githubusercontent.com/itsyashvardhan/spectral-tui/main/spectral.png</image>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.0.2" date="2026-02-02">
+      <description>
+        <p>Rebranding to Spectral with updated interface and documentation.</p>
+      </description>
+    </release>
     <release version="1.0.1" date="2026-01-27">
       <description>
         <p>Improved package metadata for better integration with Linux App Stores.</p>

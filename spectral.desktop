@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=SPECTRE
+Name=SPECTRAL
 Comment=Advanced System Interface & Dashboard
-Exec=spectre
-Icon=/media/yashvs/vault/spectre/spectre.png
+Exec=spectral
+Icon=/media/yashvs/vault/spectre/spectral.png
 Terminal=true
 Categories=System;Utility;TerminalEmulator;
 StartupNotify=true

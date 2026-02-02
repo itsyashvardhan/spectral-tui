@@ -1,21 +1,22 @@
-# <img width="1280" height="640" alt="spectre" src="https://github.com/user-attachments/assets/686d413c-b379-4807-9a0c-ff3c3af9fd59" />
+# <img width="1280" height="640" alt="spectral" src="https://github.com/user-attachments/assets/686d413c-b379-4807-9a0c-ff3c3af9fd59" />
 
-# SPECTRE
+# SPECTRAL
 
-[![GitHub version](https://img.shields.io/github/v/release/itsyashvardhan/spectre?include_prereleases&style=for-the-badge&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectre/releases/tag/1.0.1)
+[![GitHub version](https://img.shields.io/github/v/release/itsyashvardhan/spectral-tui?include_prereleases&style=for-the-badge&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui/releases/tag/1.0.2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-white.svg?style=for-the-badge&labelColor=black)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-white?style=for-the-badge&labelColor=black)](https://github.com/itsyashvardhan/spectre)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-white?style=for-the-badge&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui)
 [![Python](https://img.shields.io/badge/Python-3.8+-white?style=for-the-badge&logo=python&labelColor=black)](https://www.python.org/)
+[![Views](https://img.shields.io/badge/Views-👁️%20Dynamic-white?style=for-the-badge&color=white&labelColor=black)](https://github.com/itsyashvardhan/spectral-tui/graphs/traffic)
 
 A minimalist, high-performance system interface designed for operators who value speed and aesthetics. <br>
-SPECTRE provides a unified TUI for system monitoring, file management, and terminal operations across Linux, macOS, and Windows.
+SPECTRAL provides a unified TUI for system monitoring, file management, and terminal operations across Linux, macOS, and Windows.
 
 ## ⚡ Quick Start
 
-To install and run SPECTRE with one command:
+To install and run SPECTRAL with one command:
 
 ```bash
-curl -fsSL https://yashvs.dev/spectre/install.sh | bash
+curl -fsSL https://yashvs.dev/spectral/install.sh | bash
 ```
 
 Or to launch the interface immediately without installation:
@@ -24,9 +25,9 @@ Or to launch the interface immediately without installation:
 ./run.sh
 ```
 
-## 🛠️ Build & Installation
+## 🛠️ Build  & Installation
 
-For detailed instructions on building SPECTRE for your specific platform, please refer to the:
+For detailed instructions on building SPECTRAL for your specific platform, please refer to the:
 
 👉 **[HOW TO BUILD Guide](./HOW_TO_BUILD.md)**
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║  SPECTRE | Advanced System Interface | USB Calling Card                        ║
+║  SPECTRAL | Advanced System Interface | USB Calling Card                       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -34,7 +34,7 @@ IS_MAC = sys.platform.startswith("darwin")
 IS_LINUX = sys.platform.startswith("linux")
 HOME = os.path.expanduser("~")
 START_TIME = time.time()
-CONFIG_FILE = os.path.join(HOME, ".spectre.json")
+CONFIG_FILE = os.path.join(HOME, ".spectral.json")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -99,7 +99,7 @@ EVENTS = EventManager()
 # COLOR THEMES - Aesthetic & Pastel
 # ═══════════════════════════════════════════════════════════════════════════════
 THEMES = {
-    "spectre": {
+    "spectral": {
         "primary": curses.COLOR_WHITE,
         "secondary": curses.COLOR_CYAN,
         "accent": curses.COLOR_WHITE,
@@ -633,12 +633,12 @@ def read_file_preview(filepath, max_lines=50):
 # ASCII LOGO
 # ═══════════════════════════════════════════════════════════════════════════════
 LOGO = [
-    "███████╗██████╗ ███████╗ ██████╗████████╗██████╗ ███████╗",
-    "██╔════╝██╔══██╗██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔════╝",
-    "███████╗██████╔╝█████╗  ██║        ██║   ██████╔╝█████╗  ",
-    "╚════██║██╔═══╝ ██╔══╝  ██║        ██║   ██╔══██╗██╔══╝  ",
-    "███████║██║     ███████╗╚██████╗   ██║   ██║  ██║███████╗",
-    "╚══════╝╚═╝     ╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝",
+    "███████╗██████╗ ███████╗ ██████╗████████╗██████╗  █████╗ ██╗     ",
+    "██╔════╝██╔══██╗██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██║     ",
+    "███████╗██████╔╝█████╗  ██║        ██║   ██████╔╝███████║██║     ",
+    "╚════██║██╔═══╝ ██╔══╝  ██║        ██║   ██╔══██╗██╔══██║██║     ",
+    "███████║██║     ███████╗╚██████╗   ██║   ██║  ██║██║  ██║███████╗",
+    "╚══════╝╚═╝     ╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝",
 ]
 
 
@@ -716,7 +716,7 @@ class Terminal:
     def __init__(self):
         self.output = [
             "╔═══════════════════════════════════════════════════╗",
-            f"║  SPECTRE Terminal | {USER}@{HOST}                 ║",
+            f"║  SPECTRAL Terminal | {USER}@{HOST}                ║",
             "║  Commands: help, proc, scan, kill <pid>, clear    ║",
             "╚═══════════════════════════════════════════════════╝",
             "",
@@ -754,12 +754,12 @@ class Terminal:
             self.output.append("║ cd <dir>   - Change directory       ║")
             self.output.append("║ ls, pwd    - Standard shell cmds    ║")
             self.output.append("║ about      - System details         ║")
-            self.output.append("║ exit/quit  - Terminate SPECTRE      ║")
+            self.output.append("║ exit/quit  - Terminate SPECTRAL     ║")
             self.output.append("╚═════════════════════════════════════╝")
 
         elif cmd_lower == "about":
-            self.output.append(f"SPECTRE System Interface v1.0.0")
-            self.output.append(f"Operator: {USER} // Protocol: SPECTRE")
+            self.output.append(f"SPECTRAL System Interface v1.0.2")
+            self.output.append(f"Operator: {USER} // Protocol: SPECTRAL")
             self.output.append(
                 f"Last system breach: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
             )
@@ -1057,7 +1057,7 @@ class SpectreTUI:
             self.safe_addstr(y, x + 2, f"╣ {title} ╠", color)
 
     def draw_logo(self, y, x, h, w):
-        self.draw_box(y, x, h, w, "SPECTRE")
+        self.draw_box(y, x, h, w, "SPECTRAL")
         ly = y + 2
         for i, line in enumerate(LOGO):
             lx = x + (w - len(line)) // 2
@@ -1423,7 +1423,7 @@ def loading(stdscr):
 
     for i, stage in enumerate(stages):
         stdscr.erase()
-        header = "⚡ SPECTRE ⚡"
+        header = "⚡ SPECTRAL ⚡"
         try:
             stdscr.addstr(h // 3, (w - len(header)) // 2, header, GREEN)
         except:
@@ -1462,4 +1462,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        print("\n\033[1;32m>>> SPECTRE terminated. <<<\033[0m\n")
+        print("\n\033[1;32m>>> SPECTRAL terminated. <<<\033[0m\n")
